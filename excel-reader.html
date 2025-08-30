@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carica Database Excel - EurekArt</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .upload-area {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .upload-area h2 {
+            font-family: 'Berlin', sans-serif;
+            color: #2d8a8a;
+            margin-bottom: 20px;
+        }
+        
+        .file-input {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px dashed #2d8a8a;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        
+        .btn {
+            background: #2d8a8a;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-family: 'Berlin', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            background: #1f6b6b;
+        }
+        
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .success { background: #e8f5e8; color: #2d5a2d; }
+        .error { background: #ffe8e8; color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="scuola.html" class="nav-link">Scuola</a></li>
+                <li><a href="regali.html" class="nav-link">Regali</a></li>
+                <li><a href="libri.html" class="nav-link">Libri</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="upload-area">
+            <h2>Carica Database Excel</h2>
+            <p>Seleziona il file Data.xlsx per aggiornare la vetrina del sito</p>
+            
+            <div class="file-input">
+                <input type="file" id="excelFile" accept=".xlsx,.xls" style="margin-bottom: 10px;">
+                <br>
+                <button class="btn" onclick="processFile()">Carica e Processa</button>
+            </div>
+            
+            <div id="status"></div>
+            
+            <div>
+                <button class="btn" onclick="window.location.href='index.html'">Vai alla Home</button>
+                <button class="btn" onclick="generateSampleData()">Genera Dati di Esempio</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        function processFile() {
+            const fileInput = document.getElementById('excelFile');
+            const status = document.getElementById('status');
+            
+            if (!fileInput.files[0]) {
+                status.innerHTML = '<div class="error">Seleziona un file Excel</div>';
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    // Salva i dati nel localStorage
+                    localStorage.setItem('eurekaProducts', JSON.stringify(jsonData));
+                    
+                    status.innerHTML = `
+                        <div class="success">
+                            <strong>File processato con successo!</strong><br>
+                            Fogli trovati: ${workbook.SheetNames.join(', ')}<br>
+                            Prodotti caricati: ${jsonData.length}<br>
+                            <details style="margin-top: 10px;">
+                                <summary>Visualizza dati</summary>
+                                <pre style="text-align: left; font-size: 12px; max-height: 200px; overflow-y: auto;">${JSON.stringify(jsonData, null, 2)}</pre>
+                            </details>
+                        </div>
+                    `;
+                    
+                    console.log('Dati salvati:', jsonData);
+                } catch (error) {
+                    status.innerHTML = `<div class="error">Errore nel processamento: ${error.message}</div>`;
+                    console.error('Errore:', error);
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function generateSampleData() {
+            const sampleData = [
+                {
+                    CODICE: "001",
+                    ARTICOLO: "Harry Potter e la Pietra Filosofale",
+                    DESCRIZIONE: "Il primo libro della saga di Harry Potter",
+                    PREZZO: "15.90",
+                    CATEGORIA: "libri",
+                    EVIDENZA: "SI",
+                    FOTO: "001"
+                },
+                {
+                    CODICE: "002",
+                    ARTICOLO: "Quaderno A4 Righe",
+                    DESCRIZIONE: "Quaderno per la scuola con righe standard",
+                    PREZZO: "3.50",
+                    CATEGORIA: "scuola",
+                    EVIDENZA: "NO",
+                    FOTO: "002"
+                },
+                {
+                    CODICE: "003",
+                    ARTICOLO: "Portachiavi Personalizzato",
+                    DESCRIZIONE: "Portachiavi perfetto come idea regalo",
+                    PREZZO: "8.00",
+                    CATEGORIA: "regali",
+                    EVIDENZA: "SI",
+                    FOTO: "003"
+                }
+            ];
+            
+            localStorage.setItem('eurekaProducts', JSON.stringify(sampleData));
+            
+            const status = document.getElementById('status');
+            status.innerHTML = `
+                <div class="success">
+                    <strong>Dati di esempio generati!</strong><br>
+                    Prodotti creati: ${sampleData.length}<br>
+                    Ora puoi visitare le pagine del sito per vedere la vetrina.
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

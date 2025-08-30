@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EurekArt - Home</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-left"><a href="index.html" class="nav-link active">Home</a></li>
+                <li class="nav-right">
+                    <a href="scuola.html" class="nav-link">Scuola</a>
+                    <a href="regali.html" class="nav-link">Regali</a>
+                    <a href="libri.html" class="nav-link">Libri</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <img src="assets/header.png" alt="Header EurekArt" class="hero-image">
+            <div class="hero-content">
+            </div>
+        </section>
+        
+        <section class="section-title">
+            <h2 class="nuovi-arrivi">NUOVI ARRIVI</h2>
+        </section>
+        
+        <section class="featured-products">
+            <div id="products-container"></div>
+        </section>
+    </main>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="product-viewer.js"></script>
+</body>
+</html>
